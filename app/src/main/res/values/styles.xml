@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light">
+        <!-- Customize attributes as needed -->
+        <item name="android:colorBackground">@color/popup_background</item>
+        <!-- Add more attributes as needed -->
+    </style>
+
+    <color name="popup_background">#6200EA</color>
+</resources>

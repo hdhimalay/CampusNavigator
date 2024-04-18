@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/violet"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:backgroundTint="@color/violet"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".SplashActivity">
+
+    <androidx.cardview.widget.CardView
+        android:layout_marginTop="20dp"
+        android:id="@+id/splash_logo_card"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:layout_centerVertical="true"
+        android:layout_gravity="center"
+        android:backgroundTint="@color/white"
+        app:cardCornerRadius="100dp">
+
+        <ImageView
+            android:layout_width="125dp"
+            android:background="@color/transparent"
+            android:layout_height="125dp"
+            android:layout_marginEnd="-10dp"
+            android:layout_marginStart="-10dp"
+            android:layout_marginTop="-10dp"
+            android:layout_marginBottom="-10dp"
+            android:src="@drawable/logo"/>
+
+    </androidx.cardview.widget.CardView>
+
+
+    <ProgressBar
+        android:id="@+id/progress_bar"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_below="@+id/splash_logo_card"
+        android:layout_marginTop="20dp" />
+
+    <TextView
+        android:id="@+id/developed_by_text"
+        android:layout_width="wrap_content"
+        android:layout_height="20dp"
+        android:layout_below="@id/progress_bar"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="50dp"
+        android:text="Developed by Sangita Roy"
+        android:textColor="@color/white"
+        android:textSize="16sp" />
+</LinearLayout>

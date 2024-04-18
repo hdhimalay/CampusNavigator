@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:background="@color/violet"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".NoticeFragment">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:layout_alignParentStart="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/welcome_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="20dp"
+                android:fontFamily="sans-serif-black"
+                android:text="Hello Students"
+                android:textColor="@color/white"
+                android:textSize="35sp" />
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="0dp"
+                android:fontFamily="sans-serif-black"
+                android:text="Notice Details"
+                android:textColor="@color/white"
+                android:textSize="22sp" />
+
+        </LinearLayout>
+
+
+        <ImageView
+            android:layout_width="130dp"
+            android:layout_height="130dp"
+            android:layout_marginTop="-10dp"
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="10dp"
+            android:src="@drawable/logobg"/>
+
+    </RelativeLayout>
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        app:cardCornerRadius="30dp"
+        android:background="@color/white"
+        android:backgroundTint="@color/white"
+        android:layout_marginStart="10dp"
+        android:layout_marginBottom="10dp"
+        android:layout_marginEnd="10dp">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/details_notice_heading"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Heading of Notice"
+                android:textStyle="bold"
+                android:textSize="20sp"
+                android:textColor="@color/black"
+                android:layout_marginTop="20dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                />
+            <TextView
+                android:id="@+id/details_notice_date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="14 April, 2024"
+                android:textColor="@color/black"
+                android:textStyle="bold"
+                android:textSize="14sp"
+                android:layout_marginTop="10dp"
+                android:layout_marginStart="20dp"
+                />
+            
+            <TextView
+                android:id="@+id/details_notice_content"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Demo demo demo demo demo demo demo demo demo"
+                android:textStyle="bold"
+                android:textColor="@color/black"
+                android:textSize="16sp"
+                android:layout_marginTop="10dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                />
+
+            <ImageView
+                android:id="@+id/notice_details_imageView"
+                android:layout_width="match_parent"
+                android:layout_height="250dp"
+                android:layout_margin="20dp"/>
+
+
+            <ProgressBar
+                android:id="@+id/notice_image_progressBar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                />
+
+            <TextView
+                android:id="@+id/notice_details_close"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Close"
+                android:layout_gravity="center"
+                android:textColor="@color/violet"
+                android:textStyle="bold"
+                android:textSize="15sp"/>
+            
+        </LinearLayout>
+        
+    </androidx.cardview.widget.CardView>
+
+</LinearLayout>
