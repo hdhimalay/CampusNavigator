@@ -1,8 +1,11 @@
 package com.example.campusnavigator;
 
+import static android.content.ContentValues.TAG;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.util.Patterns;
 import android.view.View;
 import android.widget.Button;
@@ -17,6 +20,10 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -28,6 +35,8 @@ public class LoginActivity extends AppCompatActivity {
     private TextView forgotPasswordTextView;
 
     private FirebaseAuth mAuth;
+    private FirebaseAuth.AuthStateListener mAuthListener;
+    private DatabaseReference userTokensRef;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,6 +45,8 @@ public class LoginActivity extends AppCompatActivity {
 
         // Initialize Firebase Auth
         mAuth = FirebaseAuth.getInstance();
+        userTokensRef = FirebaseDatabase.getInstance().getReference().child("user_tokens");
+
 
         emailEditText = findViewById(R.id.login_email);
         passwordEditText = findViewById(R.id.login_password);
@@ -44,8 +55,6 @@ public class LoginActivity extends AppCompatActivity {
         loginPageTextTextView=findViewById(R.id.loginPageText);
         adminLoginTextView = findViewById(R.id.adminLogin);
         forgotPasswordTextView=findViewById(R.id.forgotPassword);
-
-
 
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -71,22 +80,46 @@ public class LoginActivity extends AppCompatActivity {
                             @Override
                             public void onComplete(@NonNull Task<AuthResult> task) {
                                 if (task.isSuccessful()) {
-                                    // Check if the logged-in user is admin
-                                    if (isAdminLogin && email.equals("admin@igdtuw.ac.in")) {
-                                        // Admin login success
-                                        Toast.makeText(LoginActivity.this, "Admin login Successful", Toast.LENGTH_SHORT).show();
-                                        Intent intent = new Intent(LoginActivity.this, NoticeActivity.class);
-                                        startActivity(intent);
-                                        finish();
-                                    } else if (!isAdminLogin && !email.equals("admin@igdtuw.ac.in")) {
-                                        // Student login success
-                                        Toast.makeText(LoginActivity.this, "Student login Successful", Toast.LENGTH_SHORT).show();
-                                        Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
-                                        startActivity(intent);
-                                        finish();
-                                    } else {
-                                        Toast.makeText(LoginActivity.this, "Authentication failed for admin login",
-                                                Toast.LENGTH_SHORT).show();
+                                    FirebaseUser user = mAuth.getCurrentUser();
+                                    if (user != null) {
+                                        // Check if the logged-in user is admin
+                                        boolean isAdmin = email.equals("admin@igdtuw.ac.in");
+
+                                        // Proceed with login logic based on isAdmin
+                                        if (isAdmin) {
+                                            // Admin login success
+                                            Toast.makeText(LoginActivity.this, "Admin login Successful", Toast.LENGTH_SHORT).show();
+                                            Intent intent = new Intent(LoginActivity.this, NoticeActivity.class);
+                                            startActivity(intent);
+                                            finish();
+                                        } else {
+                                            // Student login success
+                                            Toast.makeText(LoginActivity.this, "Student login Successful", Toast.LENGTH_SHORT).show();
+                                            Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
+                                            startActivity(intent);
+                                            finish();
+                                        }
+
+                                        // Generate and store FCM token
+                                        FirebaseMessaging.getInstance().getToken()
+                                                .addOnCompleteListener(new OnCompleteListener<String>() {
+                                                    @Override
+                                                    public void onComplete(@NonNull Task<String> task) {
+                                                        if (!task.isSuccessful()) {
+                                                            Log.w(TAG, "Fetching FCM registration token failed", task.getException());
+                                                            return;
+                                                        }
+
+                                                        // Get new FCM registration token
+                                                        String token = task.getResult();
+                                                        Log.i("myToken", token);
+
+                                                        // Store the token in Firebase Realtime Database
+                                                        if (!isAdmin) {
+                                                            userTokensRef.child(user.getUid()).setValue(token);
+                                                        }
+                                                    }
+                                                });
                                     }
                                 } else {
                                     Toast.makeText(LoginActivity.this, "Authentication failed: " + task.getException().getMessage(),
@@ -94,11 +127,9 @@ public class LoginActivity extends AppCompatActivity {
                                 }
                             }
                         });
+
             }
         });
-
-
-
 
         signUpTextView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -154,7 +185,42 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
+        // Firebase AuthStateListener
+        mAuthListener = new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                FirebaseUser user = firebaseAuth.getCurrentUser();
+                if (user != null) {
+                    if (user.getEmail().equals("admin@igdtuw.ac.in")) {
+                        // Admin is signed in
+                        Intent intent = new Intent(LoginActivity.this, NoticeActivity.class);
+                        startActivity(intent);
+                        finish(); // Finish LoginActivity to prevent the user from going back
+                    } else {
+                        // Student is signed in
+                        Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
+                        startActivity(intent);
+                        finish(); // Finish LoginActivity to prevent the user from going back
+                    }
+                }
+            }
+        };
 
+    }
 
+    @Override
+    public void onStart() {
+        super.onStart();
+        // Add listener
+        mAuth.addAuthStateListener(mAuthListener);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        // Remove listener
+        if (mAuthListener != null) {
+            mAuth.removeAuthStateListener(mAuthListener);
+        }
     }
 }

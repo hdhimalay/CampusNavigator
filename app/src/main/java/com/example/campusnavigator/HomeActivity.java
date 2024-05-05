@@ -1,7 +1,6 @@
 package com.example.campusnavigator;
 
 import android.os.Bundle;
-import android.view.MenuItem;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -70,7 +69,7 @@ public class HomeActivity extends AppCompatActivity {
                 loadFragment(new NoticeFragment());
                 return true;
             } else if (item.getItemId() == R.id.menu_chat) {
-                // Handle chat menu item
+                loadFragment(new ChatFragment());
                 return true;
             } else if (item.getItemId() == R.id.menu_profile) {
                 // Handle profile menu item

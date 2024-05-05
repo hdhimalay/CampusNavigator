@@ -37,6 +37,9 @@ dependencies {
     implementation(libs.material)
     implementation(libs.activity)
     implementation(libs.constraintlayout)
+    implementation(libs.firebase.messaging)
+    implementation(libs.datastore.core.android)
+    implementation(libs.ui.desktop)
     testImplementation("junit:junit:4.13.2")
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
@@ -55,6 +58,11 @@ dependencies {
     implementation ("com.squareup.picasso:picasso:2.71828")
     implementation ("com.github.bumptech.glide:glide:4.16.0")
     annotationProcessor ("com.github.bumptech.glide:compiler:4.16.0")
+    implementation ("com.google.firebase:firebase-messaging:23.4.1")
+    implementation ("com.android.volley:volley:1.2.1")
+    implementation ("com.firebaseui:firebase-ui-database:7.2.0")
+
+
 
 
 

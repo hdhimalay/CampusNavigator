@@ -16,8 +16,13 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -43,15 +48,16 @@ public class NoticeActivity extends AppCompatActivity {
     private StorageReference storageReference;
     private Uri fileUri;
     private boolean fileUploaded = false;
+    private DatabaseReference userTokensRef;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_notice);
 
-        // Initialize Firebase
         databaseReference = FirebaseDatabase.getInstance().getReference("notices");
         storageReference = FirebaseStorage.getInstance().getReference();
+        userTokensRef = FirebaseDatabase.getInstance().getReference("user_tokens");
 
         // Initialize Views
         noticeHeadingEditText = findViewById(R.id.notice_heading);
@@ -59,8 +65,8 @@ public class NoticeActivity extends AppCompatActivity {
         uploadButton = findViewById(R.id.upload_notice_button);
         submitButton = findViewById(R.id.submit_notice_button);
         fileAttachStatusTextView = findViewById(R.id.file_attach_status);
-        file_attach_and_uploaded_statusTextView=findViewById(R.id.file_attach_and_uploaded_status);
-        notice_uploaded_status_serverTextView=findViewById(R.id.notice_uploaded_status_server);
+        file_attach_and_uploaded_statusTextView = findViewById(R.id.file_attach_and_uploaded_status);
+        TextView closeTextView = findViewById(R.id.notice_activity_close);
 
         uploadButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -86,21 +92,53 @@ public class NoticeActivity extends AppCompatActivity {
                     Notice notice = new Notice(heading, content, fileUrl, currentDate);
 
                     // Push the notice object to Firebase Realtime Database under "notices" node
-                    String noticeId = databaseReference.push().getKey(); // Generating a unique key
-                    databaseReference.child(noticeId).setValue(notice); // Setting value under generated key
+                    String noticeId = databaseReference.push().getKey();
+                    databaseReference.child(noticeId).setValue(notice).addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            file_attach_and_uploaded_statusTextView.setText("Notice Uploaded in the Databsase! ");
+                            Toast.makeText(NoticeActivity.this, "Notice Uploaded and Notification sent to Students", Toast.LENGTH_SHORT).show();
 
-                    notice_uploaded_status_serverTextView.setVisibility(View.VISIBLE);
-                    file_attach_and_uploaded_statusTextView.setVisibility(View.INVISIBLE);
-                    // Display a Toast message
-                    Toast.makeText(NoticeActivity.this, "Notice is uploaded in the database", Toast.LENGTH_SHORT).show();
+                            sendNotificationToUsers(heading);
 
-                    // Reset fields
-                    noticeHeadingEditText.setText("");
-                    noticeContentEditText.setText("");
-                    fileAttachStatusTextView.setText("");
-                    fileUploaded = false;
+                            // Reset fields
+                            noticeHeadingEditText.setText("");
+                            noticeContentEditText.setText("");
+                            fileAttachStatusTextView.setText("");
+                            fileUploaded = false;
+                        }
+                    }).addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Toast.makeText(NoticeActivity.this, "Failed to upload notice: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    });
                 } else {
                     Toast.makeText(NoticeActivity.this, "Please fill heading and content fields", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+        closeTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+                if (currentUser != null && currentUser.getEmail() != null) {
+                    if (currentUser.getEmail().equals("admin@igdtuw.ac.in")) {
+                        FirebaseAuth.getInstance().signOut();
+                        Toast.makeText(NoticeActivity.this, "Admin Logged out", Toast.LENGTH_SHORT).show();
+                        Log.d("NoticeActivity", "Admin logged out");
+                        Intent intent = new Intent(NoticeActivity.this, LoginActivity.class);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                        startActivity(intent);
+                        finish();
+                    } else {
+                        Log.d("NoticeActivity", "User logged out");
+                        finish();
+                    }
+                } else {
+                    Log.d("NoticeActivity", "No user logged in");
+                    finish();
                 }
             }
         });
@@ -140,10 +178,7 @@ public class NoticeActivity extends AppCompatActivity {
                                 // Set the file URL to TextView
                                 fileAttachStatusTextView.setText(fileUrl);
                                 fileUploaded = true;
-                                notice_uploaded_status_serverTextView.setVisibility(View.INVISIBLE);
-                                file_attach_and_uploaded_statusTextView.setVisibility(View.VISIBLE);
-
-
+                                file_attach_and_uploaded_statusTextView.setText("File Uploaded SuccessFully!");
                             }
                         });
                     }
@@ -157,4 +192,30 @@ public class NoticeActivity extends AppCompatActivity {
                     }
                 });
     }
+
+    private void sendNotificationToUsers(String heading) {
+        // Send notification to all users
+        userTokensRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot userSnapshot : dataSnapshot.getChildren()) {
+                    String token = userSnapshot.getValue(String.class);
+                    sendNotification(token, heading);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.e("NoticeActivity", "Failed to read user tokens: " + databaseError.getMessage());
+            }
+        });
+    }
+
+    private void sendNotification(String token, String heading) {
+        Log.d("NoticeActivity", "Sending notification to token: " + token);
+
+        FcmNotificationsSender notificationsSender = new FcmNotificationsSender(token, heading, "", NoticeActivity.this, NoticeActivity.this);
+        notificationsSender.SendNotifications();
+    }
+
 }
