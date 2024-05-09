@@ -31,32 +31,29 @@ public class HomeFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_home, container, false);
 
-        // Initialize views
         imageView = rootView.findViewById(R.id.imageView);
         progressBar = rootView.findViewById(R.id.progressBar);
         welcomeTextView = rootView.findViewById(R.id.welcome_text_view);
 
-        // Set the welcome text using the HomeActivity instance
+
         if (getActivity() instanceof HomeActivity) {
             ((HomeActivity) getActivity()).setWelcomeText(welcomeTextView);
         }
 
         String imageUrl = "https://igdtuw.ac.in/uploads/ITR%202023.jpg";
 
-        // Load the image using Glide
         Glide.with(this)
                 .load(imageUrl)
                 .listener(new RequestListener<Drawable>() {
                     @Override
                     public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
-                        // Error loading image
+
                         progressBar.setVisibility(View.GONE);
                         return false;
                     }
 
                     @Override
                     public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
-                        // Image loaded successfully
                         progressBar.setVisibility(View.GONE);
                         return false;
                     }

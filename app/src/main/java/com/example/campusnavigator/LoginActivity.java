@@ -200,7 +200,7 @@ public class LoginActivity extends AppCompatActivity {
                         // Student is signed in
                         Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
                         startActivity(intent);
-                        finish(); // Finish LoginActivity to prevent the user from going back
+                        finish();
                     }
                 }
             }

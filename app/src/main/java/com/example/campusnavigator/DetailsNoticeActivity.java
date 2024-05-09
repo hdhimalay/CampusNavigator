@@ -19,7 +19,7 @@ public class DetailsNoticeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.details_notice);
 
-        // Get the intent extras
+
         Intent intent = getIntent();
         String heading = intent.getStringExtra("heading");
         String date = intent.getStringExtra("date");
@@ -27,11 +27,11 @@ public class DetailsNoticeActivity extends AppCompatActivity {
         String imageUri = intent.getStringExtra("imageUri");
         String username = intent.getStringExtra("username");
 
-        // Set the welcome text
+
         TextView welcomeTextView = findViewById(R.id.welcome_text_view);
         welcomeTextView.setText(username);
 
-        // Set the details in the views
+
         TextView headingTextView = findViewById(R.id.details_notice_heading);
         TextView dateTextView = findViewById(R.id.details_notice_date);
         TextView contentTextView = findViewById(R.id.details_notice_content);
@@ -43,23 +43,21 @@ public class DetailsNoticeActivity extends AppCompatActivity {
         dateTextView.setText(date);
         contentTextView.setText(content);
 
-        // Load image from URL using Picasso
         Picasso.get()
                 .load(imageUri)
                 .into(imageView, new Callback() {
                     @Override
                     public void onSuccess() {
-                        // Hide the progress bar when image is loaded successfully
+
                         imageProgressBar.setVisibility(View.GONE);
                     }
 
                     @Override
                     public void onError(Exception e) {
-                        // Handle errors if image fails to load
+
                     }
                 });
 
-        // Set click listener for close text view to finish this activity
         closeTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

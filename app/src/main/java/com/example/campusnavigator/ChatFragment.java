@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -26,16 +27,16 @@ public class ChatFragment extends Fragment {
     private RecyclerView userRecyclerView;
     private FirebaseRecyclerAdapter<User, UserViewHolder> adapter;
     private DatabaseReference usersRef;
+    private TextView welcomeTextView;
 
     public ChatFragment() {
-        // Required empty public constructor
+
     }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // Initialize Firebase Database reference
         usersRef = FirebaseDatabase.getInstance().getReference().child("users");
     }
 
@@ -43,15 +44,19 @@ public class ChatFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_chat, container, false);
 
-        // Initialize RecyclerView
         userRecyclerView = view.findViewById(R.id.user_recyclerView);
         userRecyclerView.setHasFixedSize(true);
         userRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        // Set up FirebaseRecyclerAdapter
+        welcomeTextView = view.findViewById(R.id.welcome_text_view);
+
+        if (getActivity() instanceof HomeActivity) {
+            ((HomeActivity) getActivity()).setWelcomeText(welcomeTextView);
+        }
+
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
         if (currentUser != null && !currentUser.getEmail().equals("admin@igdtuw.ac.in")) {
-            // Query to fetch all users except admin
+
             Query query = usersRef.orderByChild("email");
             FirebaseRecyclerOptions<User> options =
                     new FirebaseRecyclerOptions.Builder<User>()
@@ -61,18 +66,18 @@ public class ChatFragment extends Fragment {
             adapter = new FirebaseRecyclerAdapter<User, UserViewHolder>(options) {
                 @Override
                 protected void onBindViewHolder(@NonNull UserViewHolder holder, int position, @NonNull User model) {
-                    // Bind User object to ViewHolder
+
                     holder.bind(model);
 
                     // Set OnClickListener for user name card
                     holder.itemView.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            // Get the clicked user's ID and name
+
                             String clickedUserId = getRef(position).getKey();
                             String clickedUserName = model.getName();
 
-                            // Pass the clicked user's ID and name to the ChatWindowFragment
+
                             Bundle bundle = new Bundle();
                             bundle.putString("receiverId", clickedUserId);
                             bundle.putString("receiverName", clickedUserName);
@@ -81,7 +86,7 @@ public class ChatFragment extends Fragment {
                             chatWindowFragment = new ChatWindowFragment();
                             chatWindowFragment.setArguments(bundle);
 
-                            // Navigate to the ChatWindowFragment
+
                             requireActivity().getSupportFragmentManager().beginTransaction()
                                     .replace(R.id.fragment_container, chatWindowFragment)
                                     .addToBackStack(null)
@@ -94,16 +99,14 @@ public class ChatFragment extends Fragment {
                 @NonNull
                 @Override
                 public UserViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-                    // Inflate the layout for each item in the RecyclerView
                     View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.user_item, parent, false);
                     return new UserViewHolder(view);
                 }
             };
 
-            // Set the adapter to the RecyclerView
+
             userRecyclerView.setAdapter(adapter);
         } else {
-            // Show toast indicating that only non-admin users can access this feature
             Toast.makeText(getContext(), "Only non-admin users can access this feature", Toast.LENGTH_SHORT).show();
         }
 

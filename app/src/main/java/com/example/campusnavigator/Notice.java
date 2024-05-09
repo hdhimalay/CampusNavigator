@@ -4,20 +4,20 @@ public class Notice {
     private String heading;
     private String content;
     private String fileUrl;
-    private String date; // Add a field for the date
+    private String date;
 
-    // Default constructor required for Firebase
+
     public Notice() {
     }
 
-    // Constructor without date parameter
+
     public Notice(String heading, String content, String fileUrl) {
         this.heading = heading;
         this.content = content;
         this.fileUrl = fileUrl;
     }
 
-    // Constructor with date parameter
+
     public Notice(String heading, String content, String fileUrl, String date) {
         this.heading = heading;
         this.content = content;
@@ -25,7 +25,7 @@ public class Notice {
         this.date = date;
     }
 
-    // Getters and setters for the fields
+
     public String getHeading() {
         return heading;
     }

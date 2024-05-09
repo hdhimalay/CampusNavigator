@@ -15,10 +15,10 @@ public class Message {
     private String senderName;
     private String receiverName;
 
-    // Constructors
+
 
     public Message() {
-        // Default constructor required for Firebase
+
     }
 
     public Message(String messageId, String senderId, String receiverId, String messageText, long timestamp) {
@@ -29,7 +29,7 @@ public class Message {
         this.timestamp = timestamp;
     }
 
-    // Getters and setters
+
 
     public String getMessageId() {
         return messageId;
@@ -87,14 +87,14 @@ public class Message {
         this.receiverName = receiverName;
     }
 
-    // Method to fetch sender and receiver names asynchronously
+
     public void fetchNames(final OnNamesFetchedListener listener) {
-        // Implement fetching sender and receiver names asynchronously
+
     }
 
-    // Method to get message with sender and receiver names
+
     public String getMessage() {
-        // Implement logic to get message with sender and receiver names
+
         return null;
     }
 
@@ -124,12 +124,12 @@ public class Message {
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-                // Handle errors
+
             }
         });
     }
 
-    // Method to fetch receiver name asynchronously
+
     public void fetchReceiverName(final OnNameFetchedListener listener) {
         DatabaseReference userRef = FirebaseDatabase.getInstance().getReference().child("users").child(receiverId);
         userRef.addValueEventListener(new ValueEventListener() {
@@ -145,7 +145,7 @@ public class Message {
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-                // Handle errors
+
             }
         });
     }

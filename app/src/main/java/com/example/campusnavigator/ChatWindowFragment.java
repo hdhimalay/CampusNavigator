@@ -34,17 +34,15 @@ public class ChatWindowFragment extends Fragment {
     private String receiverName;
 
     public ChatWindowFragment() {
-        // Required empty public constructor
     }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // Initialize Firebase Database reference for messages
+
         messagesRef = FirebaseDatabase.getInstance().getReference().child("messages");
 
-        // Retrieve receiver's ID and name from arguments
         Bundle bundle = getArguments();
         if (bundle != null) {
             receiverId = bundle.getString("receiverId");
@@ -55,27 +53,23 @@ public class ChatWindowFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.chat_window, container, false);
 
-        // Initialize views
         msgRecyclerView = view.findViewById(R.id.msg_recyclerView);
         textMessage = view.findViewById(R.id.textmsg);
         sendButton = view.findViewById(R.id.sendbtn);
         nameTextView = view.findViewById(R.id.name);
 
-        // Set receiver's name
         nameTextView.setText(receiverName);
 
-        // Set up RecyclerView
+
         msgRecyclerView.setHasFixedSize(true);
         msgRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        // Set up send button click listener
+
         sendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Handle sending message
                 sendMessage();
             }
         });
@@ -95,32 +89,32 @@ public class ChatWindowFragment extends Fragment {
     }
 
     private void sendMessage() {
-        String messageText = textMessage.getText().toString().trim(); // Retrieve message text
+        String messageText = textMessage.getText().toString().trim();
         if (!messageText.isEmpty()) {
-            // Get the current user ID (sender ID)
+
             String senderId = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
-            // Create a Message object
+
             Message message = new Message(null, senderId, receiverId, messageText, System.currentTimeMillis());
 
-            // Push the message to the database
+
             messagesRef.push().setValue(message);
 
-            textMessage.setText(""); // Clear the message text after sending
+            textMessage.setText("");
         } else {
             Toast.makeText(getContext(), "Please enter a message", Toast.LENGTH_SHORT).show();
         }
     }
 
     private void fetchNames() {
-        Message message = new Message(); // Create a new Message object
+        Message message = new Message();
 
-        // Fetch sender name asynchronously
+
         message.fetchSenderName(new Message.OnNameFetchedListener() {
             @Override
             public void onNameFetched(String name) {
-                message.setSenderName(name); // Set sender name when fetched
-                adapter.notifyDataSetChanged(); // Notify the adapter of data changes
+                message.setSenderName(name);
+                adapter.notifyDataSetChanged();
             }
         });
 
@@ -128,8 +122,8 @@ public class ChatWindowFragment extends Fragment {
         message.fetchReceiverName(new Message.OnNameFetchedListener() {
             @Override
             public void onNameFetched(String name) {
-                message.setReceiverName(name); // Set receiver name when fetched
-                adapter.notifyDataSetChanged(); // Notify the adapter of data changes
+                message.setReceiverName(name);
+                adapter.notifyDataSetChanged();
             }
         });
     }
@@ -138,14 +132,12 @@ public class ChatWindowFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-        // Start listening for FirebaseRecyclerAdapter
         adapter.startListening();
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        // Stop listening for FirebaseRecyclerAdapter
         adapter.stopListening();
     }
 }

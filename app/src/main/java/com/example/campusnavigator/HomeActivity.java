@@ -33,13 +33,11 @@ public class HomeActivity extends AppCompatActivity {
 
         welcomeTextView = findViewById(R.id.student_name);
 
-        // Get the current user from Firebase Authentication
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
         if (currentUser != null) {
             String userId = currentUser.getUid();
             DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference().child("users").child(userId);
 
-            // Retrieve the user's name from Firebase Database
             usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -53,13 +51,11 @@ public class HomeActivity extends AppCompatActivity {
 
                 @Override
                 public void onCancelled(@NonNull DatabaseError error) {
-                    // Handle errors
                 }
             });
         }
 
 
-        // Set listener for bottom navigation items
         bottomNavigationView = findViewById(R.id.bottom_navigation);
         bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
             if (item.getItemId() == R.id.menu_home) {
@@ -72,7 +68,6 @@ public class HomeActivity extends AppCompatActivity {
                 loadFragment(new ChatFragment());
                 return true;
             } else if (item.getItemId() == R.id.menu_profile) {
-                // Handle profile menu item
                 return true;
             } else if (item.getItemId() == R.id.menu_settings) {
                 loadFragment(new SettingFragment());
@@ -81,7 +76,6 @@ public class HomeActivity extends AppCompatActivity {
             return false;
         });
 
-        // Load the HomeFragment by default
         loadFragment(new HomeFragment());
     }
 
@@ -91,7 +85,6 @@ public class HomeActivity extends AppCompatActivity {
         getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, fragment).commit();
     }
 
-    // Method to set the welcome text with the fetched username
     public void setWelcomeText(TextView textView) {
         if (userName != null) {
             textView.setText("Hello " + userName);

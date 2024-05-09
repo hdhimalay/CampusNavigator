@@ -43,7 +43,6 @@ public class NoticeActivity extends AppCompatActivity {
     private TextView notice_uploaded_status_serverTextView;
     private static final int PICK_IMAGE_REQUEST = 1;
 
-    // Firebase
     private DatabaseReference databaseReference;
     private StorageReference storageReference;
     private Uri fileUri;
@@ -59,7 +58,7 @@ public class NoticeActivity extends AppCompatActivity {
         storageReference = FirebaseStorage.getInstance().getReference();
         userTokensRef = FirebaseDatabase.getInstance().getReference("user_tokens");
 
-        // Initialize Views
+
         noticeHeadingEditText = findViewById(R.id.notice_heading);
         noticeContentEditText = findViewById(R.id.notice_content);
         uploadButton = findViewById(R.id.upload_notice_button);
@@ -71,10 +70,10 @@ public class NoticeActivity extends AppCompatActivity {
         uploadButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Intent to open file picker or camera/gallery
+
                 Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-                intent.setType("image/*"); // You can adjust the type as needed for your use case (e.g., "application/pdf" for PDF files)
-                startActivityForResult(intent, PICK_IMAGE_REQUEST); // Use PICK_IMAGE_REQUEST as the request code
+                intent.setType("image/*");
+                startActivityForResult(intent, PICK_IMAGE_REQUEST);
             }
         });
 
@@ -165,14 +164,13 @@ public class NoticeActivity extends AppCompatActivity {
                 .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                     @Override
                     public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                        // Get the download URL of the uploaded file
                         fileRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                             @Override
                             public void onSuccess(Uri uri) {
                                 // Update the file URL with the download URL
                                 String fileUrl = uri.toString();
 
-                                // Log the file URL
+
                                 Log.d("NoticeActivity", "File URL: " + fileUrl);
 
                                 // Set the file URL to TextView
@@ -186,7 +184,6 @@ public class NoticeActivity extends AppCompatActivity {
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        // Handle unsuccessful uploads
                         Toast.makeText(NoticeActivity.this, "Upload failed: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                         Log.e("NoticeActivity", "Upload failed: " + e.getMessage());
                     }
@@ -194,7 +191,6 @@ public class NoticeActivity extends AppCompatActivity {
     }
 
     private void sendNotificationToUsers(String heading) {
-        // Send notification to all users
         userTokensRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {

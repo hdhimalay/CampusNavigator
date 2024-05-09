@@ -10,7 +10,7 @@ public class User {
     private String course;
 
     public User() {
-        // Default constructor required for Firebase
+
     }
 
     public User(String userId, String name, String email, String phone, String password, String course) {
@@ -22,7 +22,7 @@ public class User {
         this.course = course;
     }
 
-    // Getters and setters for all fields
+
     public String getUserId() {
         return userId;
     }

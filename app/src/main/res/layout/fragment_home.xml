@@ -36,7 +36,7 @@
                 android:layout_marginStart="20dp"
                 android:layout_marginTop="0dp"
                 android:fontFamily="sans-serif-black"
-                android:text="Welcome to IGDTUW"
+                android:text="Welcome to NIT KKR"
                 android:textColor="@color/white"
                 android:textSize="22sp" />
 
